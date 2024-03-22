@@ -16,13 +16,16 @@ WIDTH, HEIGHT = 800, 600
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Rogue-like Game")
 
-# Define colors
-
+width = 80
+height = 60
+min_room_size = 5
+max_room_size = 15
 
 def main():
     # Create map and player
-    game_map = Map()
-    player = Player(400, 300, game_map.tiles)  # Pass the wall map data to the player
+    game_map = Map(width, height, min_room_size, max_room_size)
+    game_map.generate()
+    player = Player(400, 300)  # Pass the wall map data to the player
     monster = Monster(300, 300)
 
     # Create groups for monsters and items

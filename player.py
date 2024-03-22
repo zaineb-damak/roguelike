@@ -3,15 +3,14 @@
 import pygame
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, wall_map):
+    def __init__(self, x, y):
         super().__init__()
         self.image = pygame.Surface((32, 32))  # Placeholder image for now
         self.image.fill((255, 0, 0))  # Red rectangle representing the player
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)  # Starting position of the player
         self.speed = 1  # Adjust the movement speed here
-        self.wall_map = wall_map  # Reference to the map's wall data
-
+    
     def update(self):
         # Calculate the next position of the player
         keys_pressed = pygame.key.get_pressed()
@@ -26,8 +25,8 @@ class Player(pygame.sprite.Sprite):
             next_rect.y += self.speed
 
         # Check for collision with walls
-        if not self.check_collision(next_rect):
-            self.rect = next_rect
+        # if not self.check_collision(next_rect):
+        self.rect = next_rect
 
     def check_collision(self, rect):
         # Check if the next position collides with any walls

@@ -23,7 +23,7 @@ class Engine:
         self.window.fill(self.BLACK)
 
         # Draw the map
-        self.game_map.draw(self.window)
+        self.game_map.draw_map(self.window)
 
         # Draw all sprites (player, monsters, items)
         self.entities.draw(self.window)
