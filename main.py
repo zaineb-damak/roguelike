@@ -13,19 +13,20 @@ pygame.init()
 
 # Set up the display
 WIDTH, HEIGHT = 800, 600
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Rogue-like Game")
 
 width = 80
 height = 60
-min_room_size = 5
-max_room_size = 15
+min_room_size = 10
+max_room_size = 20
 
 def main():
     # Create map and player
-    game_map = Map(width, height, min_room_size, max_room_size)
-    game_map.generate()
-    player = Player(400, 300)  # Pass the wall map data to the player
+    player = Player(400, 300) 
+    game_map = Map(80, 60, window, 10, player)
     monster = Monster(300, 300)
 
     # Create groups for monsters and items
@@ -47,8 +48,21 @@ def main():
         engine.handle_events(events=pygame.event.get())
     
         # Handle player movement and render sprites
-        engine.render()
+        #engine.render()
         
+        player.update()
+
+        # Clear the screen
+        window.fill(BLACK)
+
+        # Draw the map
+        game_map.draw_map()
+
+        # Draw all sprites (player, monsters, items)
+        all_sprites.draw(window)
+
+        # Update the display
+        pygame.display.flip()
         
 
     pygame.quit()
