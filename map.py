@@ -125,14 +125,17 @@ class Map:
             w = random.randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
             h = random.randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
 
-            x = random.randint(0, self.width - w - 1)
-            y = random.randint(0, self.height - h - 1)
+            buffer = 1  # Adjust buffer size as needed
+            x = random.randint(buffer, self.width - w - buffer - 1)
+            y = random.randint(buffer, self.height - h - buffer - 1)
+
 
             new_room = Room(x, y, w, h)
             failed = False
     
             for other_room in rooms:
-                if new_room.intersect(other_room):
+                if new_room.intersect(other_room) and new_room.x1 < buffer or new_room.x2 >= self.width - buffer or \
+                new_room.y1 < buffer or new_room.y2 >= self.height - buffer:
                     failed = True
                     print("failed true")
                     break
@@ -151,13 +154,13 @@ class Map:
 
                     (prev_x, prev_y) = rooms[num_rooms-1].center()
 
-                    if random.randint(0,1) == 1:
+                    #if random.randint(0,1) == 1:
                         #first move horizontally then vertically
-                        self.create_h_tunnel(prev_y, new_y,prev_x)
-                        self.create_v_tunnel(prev_x, new_x, new_y)
-                    else:
-                        self.create_v_tunnel(prev_y, new_y, prev_x)
-                        self.create_h_tunnel(prev_x, new_x,prev_y)
+                    self.create_h_tunnel(prev_y, new_y,prev_x)
+                    self.create_v_tunnel(prev_x, new_x, new_y)
+                # else:
+                    #     self.create_v_tunnel(prev_y, new_y, prev_x)
+                    #     self.create_h_tunnel(prev_x, new_x,prev_y)
             
                 #append the new room to the list
                 rooms.append(new_room)
