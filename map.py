@@ -117,6 +117,7 @@ class Map:
     def make_map(self):
         self.map=[[ Tile(True) for y in range(self.height)] for x in range(self.width)]
         
+        
         rooms = []
         num_rooms = 0
 
@@ -129,11 +130,13 @@ class Map:
 
             new_room = Room(x, y, w, h)
             failed = False
-            
+    
             for other_room in rooms:
                 if new_room.intersect(other_room):
                     failed = True
+                    print("failed true")
                     break
+                
             if not failed:
                 self.create_room(new_room)
                 (new_x, new_y) = new_room.center()
@@ -156,9 +159,9 @@ class Map:
                         self.create_v_tunnel(prev_y, new_y, prev_x)
                         self.create_h_tunnel(prev_x, new_x,prev_y)
             
-                     #append the new room to the list
-                    rooms.append(new_room)
-                    num_rooms += 1
+                #append the new room to the list
+                rooms.append(new_room)
+                num_rooms += 1
                 
 
 
@@ -170,15 +173,33 @@ class Map:
                 self.map[x][y].block_sight = False
     
     def create_h_tunnel(self, x1, x2, y):
-        for x in range(min(x1, x2), max(x1, x2) + 1):
-            self.map[x][y].blocked = False
-            self.map[x][y].block_sight = False
-    
+        # for x in range(min(x1, x2), max(x1, x2) + 1):
+        #     self.map[x][y].blocked = False
+        #     self.map[x][y].block_sight = False
+        
+        min_x = min(x1, x2)
+        max_x = max(x1, x2)
+        center_y = y  # Use the y-coordinate of the tunnel
+        
+        for x in range(min_x, max_x + 1):
+            if 0 <= x < self.width and 0 <= center_y < self.height:
+                self.map[x][center_y].blocked = False
+                self.map[x][center_y].block_sight = False
+        
     def create_v_tunnel(self,y1, y2, x):
-        for y in range(min(y1, y2), max(y1, y2) + 1):
-            self.map[x][y].blocked = False
-            self.map[x][y].block_sight = False
-
+        # for y in range(min(y1, y2), max(y1, y2) + 1):
+        #     self.map[x][y].blocked = False
+        #     self.map[x][y].block_sight = False
+        
+        min_y = min(y1, y2)
+        max_y = max(y1, y2)
+        center_x = x  # Use the x-coordinate of the tunnel
+        
+        for y in range(min_y, max_y + 1):
+            if 0 <= center_x < self.width and 0 <= y < self.height:
+                self.map[center_x][y].blocked = False
+                self.map[center_x][y].block_sight = False
+                
     def draw_map(self ):
         for y in range(self.height):
             for x in range(self.width):

@@ -26,7 +26,7 @@ max_room_size = 20
 def main():
     # Create map and player
     player = Player(400, 300) 
-    game_map = Map(80, 60, window, 10, player)
+    game_map = Map(80, 60, window, 15, player)
     monster = Monster(300, 300)
 
     # Create groups for monsters and items
