@@ -20,8 +20,7 @@ pygame.display.set_caption("Rogue-like Game")
 
 width = 80
 height = 60
-min_room_size = 5
-max_room_size = 10
+
 
 def main():
     # Create map and player

@@ -1,69 +1,3 @@
-# import pygame
-# import random
-
-# # Define colors
-# WHITE = (255, 255, 255)
-# BLACK = (0, 0, 0)
-# BROWN = (139, 69, 19)  # Door color
-
-# class Map:
-#     def __init__(self, width, height, min_room_size, max_room_size):
-#         self.width = width
-#         self.height = height
-#         self.min_room_size = min_room_size
-#         self.max_room_size = max_room_size
-#         self.map_data = [[0 for _ in range(width)] for _ in range(height)]  # Initialize map with empty space
-#         self.generate()
-
-#     def generate(self):
-#         # Add walls around the border
-#         for x in range(self.width):
-#             self.map_data[0][x] = 1  # Top border
-#             self.map_data[self.height - 1][x] = 1  # Bottom border
-#         for y in range(self.height):
-#             self.map_data[y][0] = 1  # Left border
-#             self.map_data[y][self.width - 1] = 1  # Right border
-
-#         # Split recursively to generate dungeon
-#         self.split_recursive(1, 1, self.width - 2, self.height - 2)  # Start from (1, 1) to leave a border of walls
-
-#     def split_recursive(self, x, y, w, h):
-#         # Split dungeon recursively until room size is reached
-#         if w < self.max_room_size * 2 or h < self.max_room_size * 2:
-#             return
-
-#         if random.random() < 0.5:  # Split horizontally
-#             split_pos = random.randint(y + self.min_room_size, y + h - self.min_room_size)
-#             door_x = random.randint(x + 1, x + w - 2)  # Random x position for door
-#             self.map_data[split_pos][door_x] = 2  # Set tile to door
-#             for i in range(x, x + w):
-#                 self.map_data[split_pos][i] = 1  # Set tiles to wall
-
-#             self.split_recursive(x, y, w, split_pos - y)
-#             self.split_recursive(x, split_pos, w, h - (split_pos - y))
-#         else:  # Split vertically
-#             split_pos = random.randint(x + self.min_room_size, x + w - self.min_room_size)
-#             door_y = random.randint(y + 1, y + h - 2)  # Random y position for door
-#             self.map_data[door_y][split_pos] = 2  # Set tile to door
-#             for i in range(y, y + h):
-#                 self.map_data[i][split_pos] = 1  # Set tiles to wall
-
-#             self.split_recursive(x, y, split_pos - x, h)
-#             self.split_recursive(split_pos, y, w - (split_pos - x), h)
-
-#     def draw_map(self, window):
-#         TILE_SIZE = min(window.get_width() // self.width, window.get_height() // self.height)
-
-#         # Draw map
-#         for y in range(self.height):
-#             for x in range(self.width):
-#                 if self.map_data[y][x] == 1:
-#                     tile_color = WHITE  # Wall color
-#                 elif self.map_data[y][x] == 2:
-#                     tile_color = BROWN  # Door color
-#                 else:
-#                     tile_color = BLACK  # Empty space color
-#                 pygame.draw.rect(window, tile_color, (x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
 import pygame
 import random
@@ -72,7 +6,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 ROOM_MAX_SIZE = 10
-ROOM_MIN_SIZE = 6
+ROOM_MIN_SIZE = 5
 MAX_ROOMS = 30
 
 class Tile:
@@ -102,22 +36,18 @@ class Room:
 
 
     
-
-
 class Map:
-    def __init__(self, width, height, window, tile_size, player):
-        self.width = width
-        self.height = height
+    def __init__(self, w, h, window, tile_size, player):
+        self.collision_map=[[ Tile(True) for y in range(h)] for x in range(w)]
+        self.width = w - (tile_size * 2)
+        self.height = h- (tile_size * 2)
         self.window = window
         self.tile_size = tile_size
         self.player = player
-        self.map=[]
+        self.map=[[ Tile(True) for y in range(self.height)] for x in range(self.width)]
         self.make_map()
 
     def make_map(self):
-        self.map=[[ Tile(True) for y in range(self.height)] for x in range(self.width)]
-        
-        
         rooms = []
         num_rooms = 0
 
@@ -125,46 +55,31 @@ class Map:
             w = random.randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
             h = random.randint(ROOM_MIN_SIZE, ROOM_MAX_SIZE)
 
-            buffer = 1  # Adjust buffer size as needed
-            x = random.randint(buffer, self.width - w - buffer - 1)
-            y = random.randint(buffer, self.height - h - buffer - 1)
+            
+            x = random.randint(0, self.width - w  - 1)
+            y = random.randint(0, self.height - h - 1)
 
 
             new_room = Room(x, y, w, h)
             failed = False
     
             for other_room in rooms:
-                if new_room.intersect(other_room) and new_room.x1 < buffer or new_room.x2 >= self.width - buffer or \
-                new_room.y1 < buffer or new_room.y2 >= self.height - buffer:
+                if new_room.intersect(other_room):
                     failed = True
                     print("failed true")
                     break
                 
             if not failed:
                 self.create_room(new_room)
-                (new_x, new_y) = new_room.center()
-
-                if num_rooms == 0:
-                    #this is the first room, where the player starts at
-                    self.player.x = new_x
-                    self.player.y = new_y
-                else:
-                    #all rooms after the first:
-                    #connect it to the previous room with a tunnel
-
-                    (prev_x, prev_y) = rooms[num_rooms-1].center()
-
-                    #if random.randint(0,1) == 1:
-                        #first move horizontally then vertically
-                    self.create_h_tunnel(prev_y, new_y,prev_x)
-                    self.create_v_tunnel(prev_x, new_x, new_y)
-                # else:
-                    #     self.create_v_tunnel(prev_y, new_y, prev_x)
-                    #     self.create_h_tunnel(prev_x, new_x,prev_y)
-            
+                if num_rooms > 0:
+                    prev_room = rooms[num_rooms - 1]
+                    if not self.is_connected(prev_room, new_room):
+                        self.connect_rooms(prev_room, new_room)
+                
                 #append the new room to the list
                 rooms.append(new_room)
                 num_rooms += 1
+                print(num_rooms)
                 
 
 
@@ -175,35 +90,59 @@ class Map:
                 self.map[x][y].blocked = False
                 self.map[x][y].block_sight = False
     
-    def create_h_tunnel(self, x1, x2, y):
-        # for x in range(min(x1, x2), max(x1, x2) + 1):
-        #     self.map[x][y].blocked = False
-        #     self.map[x][y].block_sight = False
+    def is_connected(self, room1, room2):
+        center1 = room1.center()
+        center2 = room2.center()
+
+        x1, y1 = center1
+        x2, y2 = center2
+
+        # Check if there is already a tunnel between the rooms
+        if x1 == x2:
+            for y in range(min(y1, y2), max(y1, y2) + 1):
+                if not self.map[x1][y].blocked:
+                    return True
+        elif y1 == y2:
+            for x in range(min(x1, x2), max(x1, x2) + 1):
+                if not self.map[x][y1].blocked:
+                    return True
         
-        min_x = min(x1, x2)
-        max_x = max(x1, x2)
-        center_y = y  # Use the y-coordinate of the tunnel
-        
-        for x in range(min_x, max_x + 1):
-            if 0 <= x < self.width and 0 <= center_y < self.height:
-                self.map[x][center_y].blocked = False
-                self.map[x][center_y].block_sight = False
-        
-    def create_v_tunnel(self,y1, y2, x):
-        # for y in range(min(y1, y2), max(y1, y2) + 1):
-        #     self.map[x][y].blocked = False
-        #     self.map[x][y].block_sight = False
-        
-        min_y = min(y1, y2)
-        max_y = max(y1, y2)
-        center_x = x  # Use the x-coordinate of the tunnel
-        
-        for y in range(min_y, max_y + 1):
-            if 0 <= center_x < self.width and 0 <= y < self.height:
-                self.map[center_x][y].blocked = False
-                self.map[center_x][y].block_sight = False
+        return False
+
+    def connect_rooms(self, room1, room2):
+        center1 = room1.center()
+        center2 = room2.center()
+
+        x1, y1 = center1
+        x2, y2 = center2
+
+        # Draw a horizontal tunnel first
+        self.create_horizontal_tunnel(min(x1, x2), max(x1, x2), y1)
+
+        # Then draw a vertical tunnel
+        self.create_vertical_tunnel(y1, y2, x2)
+
+    def create_horizontal_tunnel(self, x1, x2, y):
+        for x in range(min(x1, x2), max(x1, x2) + 1):
+            self.map[x][y].blocked = False
+            self.map[x][y].block_sight = False
+
+    def create_vertical_tunnel(self, y1, y2, x):
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            self.map[x][y].blocked = False
+            self.map[x][y].block_sight = False
                 
     def draw_map(self ):
+        for y in range(self.height + self.tile_size*2):
+            for x in range(self.width + self.tile_size*2):
+                wall = self.collision_map[x][y].blocked
+                if wall:
+                    color = WHITE
+                else:
+                    color = BLACK
+                
+                pygame.draw.rect(self.window, color, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
+        
         for y in range(self.height):
             for x in range(self.width):
                 wall = self.map[x][y].blocked
