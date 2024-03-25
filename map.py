@@ -37,18 +37,19 @@ class Room:
 
     
 class Map:
-    def __init__(self, w, h, window, tile_size, player):
+    def __init__(self, w, h, window, tile_size):
         self.collision_map=[[ Tile(True) for y in range(h)] for x in range(w)]
         self.width = w - (tile_size * 2)
         self.height = h- (tile_size * 2)
         self.window = window
         self.tile_size = tile_size
-        self.player = player
+        
         self.map=[[ Tile(True) for y in range(self.height)] for x in range(self.width)]
+        self.rooms = []
         self.make_map()
 
     def make_map(self):
-        rooms = []
+
         num_rooms = 0
 
         for r in range(MAX_ROOMS):
@@ -63,25 +64,25 @@ class Map:
             new_room = Room(x, y, w, h)
             failed = False
     
-            for other_room in rooms:
+            for other_room in self.rooms:
                 if new_room.intersect(other_room):
                     failed = True
-                    print("failed true")
                     break
                 
             if not failed:
                 self.create_room(new_room)
+                # if num_rooms == 0:
+                #     print("room 0")
+                #     self.set_player_initial_pos(new_room)
                 if num_rooms > 0:
-                    prev_room = rooms[num_rooms - 1]
-                    if not self.is_connected(prev_room, new_room):
-                        self.connect_rooms(prev_room, new_room)
-                
+                    prev_room = self.rooms[num_rooms - 1]
+                    #if not self.is_connected(prev_room, new_room):
+                    self.connect_rooms(prev_room, new_room)
+               
+                    
                 #append the new room to the list
-                rooms.append(new_room)
+                self.rooms.append(new_room)
                 num_rooms += 1
-                print(num_rooms)
-                
-
 
     
     def create_room(self,room):
@@ -100,11 +101,11 @@ class Map:
         # Check if there is already a tunnel between the rooms
         if x1 == x2:
             for y in range(min(y1, y2), max(y1, y2) + 1):
-                if not self.map[x1][y].blocked:
+                if self.map[x1][y].blocked:
                     return True
         elif y1 == y2:
             for x in range(min(x1, x2), max(x1, x2) + 1):
-                if not self.map[x][y1].blocked:
+                if self.map[x][y1].blocked:
                     return True
         
         return False
@@ -117,8 +118,7 @@ class Map:
         x2, y2 = center2
 
         # Draw a horizontal tunnel first
-        self.create_horizontal_tunnel(min(x1, x2), max(x1, x2), y1)
-
+        self.create_horizontal_tunnel(x1, x2, y1)
         # Then draw a vertical tunnel
         self.create_vertical_tunnel(y1, y2, x2)
 
@@ -131,25 +131,36 @@ class Map:
         for y in range(min(y1, y2), max(y1, y2) + 1):
             self.map[x][y].blocked = False
             self.map[x][y].block_sight = False
+    
+    def get_initial_room(self):
+        if self.rooms:
+            return self.rooms[0]
+        else:
+            return None
+
+    
+
                 
     def draw_map(self ):
-        for y in range(self.height + self.tile_size*2):
-            for x in range(self.width + self.tile_size*2):
-                wall = self.collision_map[x][y].blocked
-                if wall:
-                    color = WHITE
-                else:
-                    color = BLACK
+        wall_image = pygame.image.load("./assets/floor.png")
+        #floor_image = pygame.image.load("./assets/floor.png")
+        # for y in range(self.height + self.tile_size*2):
+        #     for x in range(self.width + self.tile_size*2):
+        #         wall = self.collision_map[x][y].blocked
+        #         if wall:
+        #             color = WHITE
+        #         else:
+        #             color = BLACK
                 
-                pygame.draw.rect(self.window, color, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
+                #pygame.draw.rect(self.window, color, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
         
         for y in range(self.height):
             for x in range(self.width):
                 wall = self.map[x][y].blocked
                 if wall:
-                    color = WHITE
+                    self.window.blit(wall_image, (x * self.tile_size, y * self.tile_size))
                 else:
-                    color = BLACK
-                
-                pygame.draw.rect(self.window, color, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
+                    #self.window.blit(floor_image, (x * self.tile_size, y * self.tile_size))
+                    pygame.draw.rect(self.window, BLACK, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
+                #pygame.draw.rect(self.window, color, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
 

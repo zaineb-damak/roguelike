@@ -1,8 +1,10 @@
 import pygame
 
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
 class Engine:
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
+   
     def __init__(self, entities, game_map, window,player):
         self.entities = entities
         self.game_map = game_map
@@ -20,13 +22,14 @@ class Engine:
         self.player.update()
 
         # Clear the screen
-        self.window.fill(self.BLACK)
+        self.window.fill(BLACK)
 
         # Draw the map
         self.game_map.draw_map()
 
         # Draw all sprites (player, monsters, items)
         self.entities.draw(self.window)
+        
 
         # Update the display
         pygame.display.flip()

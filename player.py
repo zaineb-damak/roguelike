@@ -3,15 +3,24 @@
 import pygame
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, map,tile_size):
         super().__init__()
-        self.x = x
-        self.y = y
-        self.image = pygame.Surface((32, 32))  # Placeholder image for now
-        self.image.fill((255, 0, 0))  # Red rectangle representing the player
+        self.map = map
+        self.tile_size = tile_size
+        (self.x, self.y)= self.set_initial_pos()
+        print(self.x, self.y)
+        self.image = pygame.image.load("./assets/player.png")
         self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)  # Starting position of the player
-        self.speed = 5  # Adjust the movement speed here
+        # Starting position of the player
+        self.rect.topleft = (self.x*tile_size, self.y*tile_size)
+        self.speed = 1  # Adjust the movement speed here
+       
+        #self.set_initial_pos()
+
+    def set_initial_pos(self):
+        room = self.map.get_initial_room()
+        (x,y) = room.center()
+        return (x,y)
     
     def update(self):
         # Calculate the next position of the player
