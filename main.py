@@ -12,8 +12,9 @@ from engine import Engine
 pygame.init()
 
 # Set up the display
+global tile_size
+tile_size = 20
 WIDTH, HEIGHT = 800, 600
-
 window = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Rogue-like Game")
 
@@ -22,7 +23,7 @@ def main():
     # Create map and player
     
     game_map = Map(80, 60, window, 20)
-    player = Player(game_map, 20) 
+    player = Player(400,300,game_map, 20) 
     
     monster = Monster(300, 300)
 
