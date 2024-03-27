@@ -23,10 +23,10 @@ class Tile:
         self.blocked = blocked
                
         self.block_sight = block_sight
-        
+        self.tile_size = 10
         self.image = pygame.image.load(f"./assets/{self.name}.png")
+        self.image = pygame.transform.scale(self.image, (self.tile_size, self.tile_size))
         self.rect = self.image.get_rect()
-        self.tile_size = self.rect.width
 
 class Room:
     def __init__(self, x, y, w, h):

@@ -25,7 +25,6 @@ class Entity(pygame.sprite.Sprite):
 
     def check_collision(self, next_rect):
        
-
         #Check if any corner of the player's bounding box collides with a wall
         corners = [(next_rect.x, next_rect.y),                                    # Top-left
                    (next_rect.x + self.rect.width, next_rect.y),                   # Top-right
@@ -37,13 +36,11 @@ class Entity(pygame.sprite.Sprite):
             # Calculate the grid position of the corner
             corner_tile_x = corner[0] // self.tile_size
             corner_tile_y = corner[1] // self.tile_size
-
-            # Check if the corner is within the boundaries of the map
-            if (0 <= corner_tile_x < len(self.wall_map[0])) and (0 <= corner_tile_y < len(self.wall_map)):
-                # Check if the corner corresponds to a wall
-                if self.wall_map[corner_tile_x][corner_tile_y].blocked:
-                    return True  # Collision detected with a wall
-        
+            
+            # Check if the corner corresponds to a wall
+            if self.wall_map[corner_tile_x][corner_tile_y].blocked:
+                return True  # Collision detected with a wall
+    
         return False  # No collision detected
        
     
