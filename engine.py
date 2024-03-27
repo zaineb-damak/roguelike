@@ -19,7 +19,7 @@ class Engine:
     
     def render(self):
         #update player's moves
-        self.player.update()
+        self.player.move()
 
         # Clear the screen
         self.window.fill(BLACK)

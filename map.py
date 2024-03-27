@@ -2,6 +2,7 @@
 import pygame
 import random
 
+
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
@@ -135,7 +136,14 @@ class Map:
             return None
 
     
-
+    def get_mask_rect(self, surf, top=0, left=0):
+        """Returns minimal bounding rectangle of an image"""
+        surf_mask = pygame.mask.from_surface(surf)
+        rect_list = surf_mask.get_bounding_rects()
+        if rect_list:
+            surf_mask_rect = rect_list[0].unionall(rect_list)
+            surf_mask_rect.move_ip(top, left)
+            return surf_mask_rect
                 
     def draw_map(self ):
         wall_image = pygame.image.load("./assets/floor.png")
@@ -155,8 +163,9 @@ class Map:
                 wall = self.map[x][y].blocked
                 if wall:
                     self.window.blit(wall_image, (x * self.tile_size, y * self.tile_size))
-                    wall_rect = pygame.Rect(x, y, x *  self.tile_size, y * self.tile_size)
-                    self.wall_list.append(wall_rect)
+                    wall_rect = pygame.Rect( x *  self.tile_size,  y *  self.tile_size, x *  self.tile_size, y * self.tile_size)
+                    wall_hitbox = self.get_mask_rect(wall_image, *wall_rect.topleft)
+                    self.wall_list.append(wall_hitbox)
                 else:
                     #self.window.blit(floor_image, (x * self.tile_size, y * self.tile_size))
                     pygame.draw.rect(self.window, BLACK, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
