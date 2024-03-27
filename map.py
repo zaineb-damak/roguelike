@@ -12,12 +12,21 @@ MAX_ROOMS = 30
 
 class Tile:
     def __init__(self, blocked, block_sight=None):
-        self.blocked = blocked
-
+        super().__init__()
         if block_sight is None:
             block_sight = blocked
-       
+        if blocked:
+            self.name = 'wall'
+        else : 
+            self.name = 'floor'
+               
+        self.blocked = blocked
+               
         self.block_sight = block_sight
+        
+        self.image = pygame.image.load(f"./assets/{self.name}.png")
+        self.rect = self.image.get_rect()
+        self.tile_size = self.rect.width
 
 class Room:
     def __init__(self, x, y, w, h):
@@ -39,9 +48,8 @@ class Room:
     
 class Map:
     def __init__(self, w, h, window, tile_size):
-        self.collision_map=[[ Tile(True) for _ in range(h)] for _ in range(w)]
-        self.width = w - (tile_size * 2)
-        self.height = h - (tile_size * 2)
+        self.width = w #- (tile_size * 2)
+        self.height = h #- (tile_size * 2)
         self.window = window
         self.tile_size = tile_size
         self.map=[[ Tile(True) for _ in range(self.height)] for _ in range(self.width)]
@@ -73,7 +81,6 @@ class Map:
                 self.create_room(new_room)
                 if num_rooms > 0:
                     prev_room = self.rooms[num_rooms - 1]
-                    #if not self.is_connected(prev_room, new_room):
                     self.connect_rooms(prev_room, new_room)
                
                     
@@ -87,32 +94,10 @@ class Map:
             for y in range(room.y1 + 1,room.y2):
                 self.map[x][y].blocked = False
                 self.map[x][y].block_sight = False
-    
-    def is_connected(self, room1, room2):
-        center1 = room1.center()
-        center2 = room2.center()
-
-        x1, y1 = center1
-        x2, y2 = center2
-
-        # Check if there is already a tunnel between the rooms
-        if x1 == x2:
-            for y in range(min(y1, y2), max(y1, y2) + 1):
-                if self.map[x1][y].blocked:
-                    return True
-        elif y1 == y2:
-            for x in range(min(x1, x2), max(x1, x2) + 1):
-                if self.map[x][y1].blocked:
-                    return True
-        
-        return False
 
     def connect_rooms(self, room1, room2):
-        center1 = room1.center()
-        center2 = room2.center()
-
-        x1, y1 = center1
-        x2, y2 = center2
+        x1, y1 = room1.center()
+        x2, y2 = room2.center()
 
         # Draw a horizontal tunnel first
         self.create_horizontal_tunnel(x1, x2, y1)
@@ -135,39 +120,14 @@ class Map:
         else:
             return None
 
-    
-    def get_mask_rect(self, surf, top=0, left=0):
-        """Returns minimal bounding rectangle of an image"""
-        surf_mask = pygame.mask.from_surface(surf)
-        rect_list = surf_mask.get_bounding_rects()
-        if rect_list:
-            surf_mask_rect = rect_list[0].unionall(rect_list)
-            surf_mask_rect.move_ip(top, left)
-            return surf_mask_rect
-                
-    def draw_map(self ):
-        wall_image = pygame.image.load("./assets/floor.png")
-        #floor_image = pygame.image.load("./assets/floor.png")
-        # for y in range(self.height + self.tile_size*2):
-        #     for x in range(self.width + self.tile_size*2):
-        #         wall = self.collision_map[x][y].blocked
-        #         if wall:
-        #             color = WHITE
-        #         else:
-        #             color = BLACK
-                
-                #pygame.draw.rect(self.window, color, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
-        
+     
+    def draw_map(self):        
         for y in range(self.height):
             for x in range(self.width):
-                wall = self.map[x][y].blocked
-                if wall:
-                    self.window.blit(wall_image, (x * self.tile_size, y * self.tile_size))
-                    wall_rect = pygame.Rect( x *  self.tile_size,  y *  self.tile_size, x *  self.tile_size, y * self.tile_size)
-                    wall_hitbox = self.get_mask_rect(wall_image, *wall_rect.topleft)
-                    self.wall_list.append(wall_hitbox)
+                wall = self.map[x][y]
+                if wall.blocked:
+                    self.window.blit(wall.image, (x * self.tile_size, y * self.tile_size))
+                    self.wall_list.append(wall.rect)
                 else:
-                    #self.window.blit(floor_image, (x * self.tile_size, y * self.tile_size))
                     pygame.draw.rect(self.window, BLACK, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
-                #pygame.draw.rect(self.window, color, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
-       
+            
