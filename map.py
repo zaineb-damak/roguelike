@@ -1,6 +1,7 @@
 
 import pygame
 import random
+from monster import Monster
 
 
 WHITE = (255, 255, 255)
@@ -9,6 +10,7 @@ BLACK = (0, 0, 0)
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 5
 MAX_ROOMS = 30
+MAX_ROOMS_MONSTERS = 3
 
 class Tile:
     def __init__(self, blocked, block_sight=None):
@@ -23,7 +25,7 @@ class Tile:
         self.blocked = blocked
                
         self.block_sight = block_sight
-        self.tile_size = 10
+        self.tile_size = 20
         self.image = pygame.image.load(f"./assets/{self.name}.png")
         self.image = pygame.transform.scale(self.image, (self.tile_size, self.tile_size))
         self.rect = self.image.get_rect()
@@ -48,13 +50,14 @@ class Room:
     
 class Map:
     def __init__(self, w, h, window, tile_size):
-        self.width = w #- (tile_size * 2)
-        self.height = h #- (tile_size * 2)
+        self.width = w 
+        self.height = h 
         self.window = window
         self.tile_size = tile_size
         self.map=[[ Tile(True) for _ in range(self.height)] for _ in range(self.width)]
         self.rooms = []
         self.wall_list = []
+        self.monsters = []
         self.make_map()
 
     def make_map(self):
@@ -85,6 +88,7 @@ class Map:
                
                     
                 #append the new room to the list
+                self.place_monsters(new_room)
                 self.rooms.append(new_room)
                 num_rooms += 1
 
@@ -119,6 +123,16 @@ class Map:
             return self.rooms[0]
         else:
             return None
+
+    def place_monsters(self, room):
+        num_monsters = random.randint(0,MAX_ROOMS_MONSTERS)
+        for i in range(num_monsters):
+            x = random.randint(room.x1,room.x2) 
+            y = random.randint(room.y1,room.y2) 
+            if not self.map[x][y].blocked:
+                monster = Monster(x,y,self,self.tile_size)
+                self.monsters.append(monster)
+
 
      
     def draw_map(self):        

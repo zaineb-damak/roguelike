@@ -12,7 +12,9 @@ class Player(Entity):
     def set_initial_pos(self):
         room = self.map.get_initial_room()
         (x,y) = room.center()
-        return (x * self.tile_size, y*self.tile_size)
+        print(x*self.tile_size,y*self.tile_size)
+        return (x * self.tile_size, y * self.tile_size)
+    
     
     def move(self):
         # Calculate the next position of the player

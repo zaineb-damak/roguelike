@@ -1,11 +1,22 @@
 import pygame
+import random
+from entity import Entity
 
-class Monster(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__()
-        self.image = pygame.image.load("./assets/demon.png")  # Placeholder image for now
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)  # Starting position of the monster
+class Monster(Entity):
+    def __init__(self, x, y,map, tile_size):
+        super().__init__('demon',x, y, map, tile_size)
+        self.rect.topleft = (x*self.tile_size, y*self.tile_size)  # Starting position of the monster
+        self.image = pygame.transform.scale(self.image, (10, 10))
 
     def update(self):
         pass  # Add monster movement and other logic here
+
+    # def set_initial_pos(self,room):
+    #     x = random.randint(room.x1+1,room.x2-1) 
+    #     y = random.randint(room.y1-1,room.y2+1) 
+    #     if not self.map.map[x][y].blocked:
+    #         self.x = x
+    #         self.y = y
+    #         self.rect.topleft = (self.x*self.tile_size, self.y*self.tile_size)
+    #         print(self.rect.topleft)
+

@@ -25,8 +25,8 @@ def main():
     game_map = Map(80, 60, window, tile_size)
     player = Player(400,300,game_map, tile_size) 
     
-    monster = Monster(300, 300)
-
+    #monster = Monster(300, 300)
+ 
     # Create groups for monsters and items
     all_sprites = pygame.sprite.Group()
     monsters = pygame.sprite.Group()
@@ -34,8 +34,8 @@ def main():
 
     # Add player to all_sprites group
     all_sprites.add(player)
-    all_sprites.add(monster)
-    monsters.add(monster)
+    all_sprites.add(game_map.monsters)
+    monsters.add(monsters)
 
     engine = Engine(all_sprites, game_map, window, player)
 
