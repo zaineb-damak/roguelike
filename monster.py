@@ -1,10 +1,10 @@
 import pygame
 import random
-from entity import Entity
+from creature import Creature
 
-class Monster(Entity):
-    def __init__(self, x, y,map, tile_size):
-        super().__init__('demon',x, y, map, tile_size)
+class Monster(Creature):
+    def __init__(self, x, y,map, tile_size,blocks):
+        super().__init__('demon',x, y, map, tile_size,blocks)
         self.rect.topleft = (x*self.tile_size, y*self.tile_size)  # Starting position of the monster
         self.image = pygame.transform.scale(self.image, (10, 10))
 

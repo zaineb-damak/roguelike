@@ -51,13 +51,14 @@ class Room:
 class Map:
     def __init__(self, w, h, window, tile_size):
         self.width = w 
-        self.height = h 
+        self.height = h
         self.window = window
         self.tile_size = tile_size
         self.map=[[ Tile(True) for _ in range(self.height)] for _ in range(self.width)]
         self.rooms = []
         self.wall_list = []
         self.monsters = []
+        self.entities = []
         self.make_map()
 
     def make_map(self):
@@ -124,13 +125,23 @@ class Map:
         else:
             return None
 
+    def get_blocking_entity(self,x, y):
+        ''' returns entity if it blocks else return none'''
+        # #first test the map tile
+        # if not self.map[x][y].blocked:       
+        #check for any blocking objects
+        for entity in self.entities :
+            if entity.blocks and entity.x == x and entity.y == y:
+                return entity
+        return None
+        
     def place_monsters(self, room):
         num_monsters = random.randint(0,MAX_ROOMS_MONSTERS)
         for i in range(num_monsters):
             x = random.randint(room.x1,room.x2) 
             y = random.randint(room.y1,room.y2) 
-            if not self.map[x][y].blocked:
-                monster = Monster(x,y,self,self.tile_size)
+            if not self.map[x][y].blocked and self.get_blocking_entity(x,y) is None:
+                monster = Monster(x,y,self,self.tile_size,True)
                 self.monsters.append(monster)
 
 
@@ -144,4 +155,5 @@ class Map:
                     self.wall_list.append(wall.rect)
                 else:
                     pygame.draw.rect(self.window, BLACK, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
+        self.entities.draw(self.window)
             
