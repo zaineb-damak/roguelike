@@ -21,7 +21,8 @@ class Engine:
     def __init__(self):
         self.window = pygame.display.set_mode((WIDTH, HEIGHT))
         self.game_map = Map(80, 60, self.window, tile_size)
-        self.player =Player(400,300,self.game_map, tile_size, True)
+        self.player =Player(400,300,self.game_map,blocks=True)
+        self.monsters = self.game_map.monsters
         
     
     def handle_events(self,events):
@@ -32,7 +33,10 @@ class Engine:
     def render(self):
         #update player's moves
         self.player.move()
-
+        for monster in self.monsters:
+            monster.attack(self.player)
+        #self.monsters[0].move_to(self.player)
+        
         # Clear the screen
         self.window.fill(BLACK)
 
@@ -40,7 +44,7 @@ class Engine:
         self.game_map.draw_map()
 
         # Draw all sprites (player, monsters, items)
-        #self.game_map.entities.draw(self.window)
+        self.game_map.entities.draw(self.window)
         
 
         # Update the display
@@ -59,6 +63,7 @@ class Engine:
         all_sprites.add(self.game_map.monsters)
         monsters.add(monsters)
         self.game_map.entities = all_sprites
+        self.game_map.player = self.player
         
         running = True
 

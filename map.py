@@ -2,6 +2,7 @@
 import pygame
 import random
 from monster import Monster
+from player import Player
 
 
 WHITE = (255, 255, 255)
@@ -126,16 +127,14 @@ class Map:
             return None
 
     def get_blocking_entity(self,x, y):
-        ''' returns entity if it blocks else return none'''
-        # #first test the map tile
-        # if not self.map[x][y].blocked:       
+        ''' returns entity if it blocks else return none'''       
         #check for any blocking objects
         for entity in self.entities :
             if entity.blocks and entity.x == x and entity.y == y:
                 return entity
         return None
         
-    def place_monsters(self, room):
+    def place_monsters(self, room): 
         num_monsters = random.randint(0,MAX_ROOMS_MONSTERS)
         for i in range(num_monsters):
             x = random.randint(room.x1,room.x2) 
@@ -143,7 +142,10 @@ class Map:
             if not self.map[x][y].blocked and self.get_blocking_entity(x,y) is None:
                 monster = Monster(x,y,self,self.tile_size,True)
                 self.monsters.append(monster)
-
+            
+    def get_pos(self, entity):
+        return self.map[entity.x // self.tile_size][entity.y // self.tile_size]
+    
 
      
     def draw_map(self):        
@@ -155,5 +157,5 @@ class Map:
                     self.wall_list.append(wall.rect)
                 else:
                     pygame.draw.rect(self.window, BLACK, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
-        self.entities.draw(self.window)
+        
             
