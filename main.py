@@ -1,6 +1,5 @@
-from engine import Engine
+import TheGame
 
 
 if __name__ == "__main__":
-    engine = Engine()
-    engine.main()
+    TheGame.theGame().main()

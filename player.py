@@ -2,6 +2,8 @@
 
 import pygame
 from creature import Creature
+from monster import Monster
+from equipment import Equipment
 
 class Player(Creature):
     def __init__(self,x, y,map,blocks):
@@ -14,7 +16,9 @@ class Player(Creature):
         self.time = 0
         self.can_get_hurt = True
         self.is_attacking = False
-    
+        self.speed = 2
+        self.turn = False
+        self.attack_cooldown = 0
 
     def set_initial_pos(self):
         room = self.map.get_initial_room()
@@ -39,16 +43,39 @@ class Player(Creature):
     def move(self):
     # Check for collision with walls
         dest = self.input()
-        if not self.check_collision(dest) and self.map.get_blocking_entity(dest.x // self.tile_size, dest.y//self.tile_size) is None:
+        if not self.check_collision(dest)  and self.moves:
             self.rect = dest
        
-        self.attack(dest.x // self.tile_size, dest.y//self.tile_size)
-        # for monster in self.map.monsters:
-        #     monster.move_to(300,400)
+        
+        
 
-    def attack(self, x,y):
-        target = self.map.get_blocking_entity(x, y)
-        if not target:
+    def meet(self, entity):
+        if isinstance(entity, Monster):
+            print("combat starting")
+            self.attack(entity)
+        if isinstance(entity, Equipment):
+            pass
+        else:
             return
-        print(f" attack {target.name}")
-        self.is_attacking = True
+         
+
+    def attack(self, entity):
+        entity.attack(self)
+        # print("player ", self.attack_cooldown)
+        # if self.attack_cooldown > 0:
+        #     self.attack_cooldown -= 1
+       
+        damage = self.strength - entity.defense
+        if damage > 0 and self.turn and self.attack_cooldown == 0 :
+            print(f"{self.name} attacks {entity.name} for {damage} hit points")
+            entity.take_damage(damage)
+            #self.attack_cooldown = 60
+            self.turn = False
+            entity.turn = True
+            
+        elif damage<0 and self.attack_cooldown == 0 and self.turn:
+            print(f"{self.name} attacks {entity.name} but it has no effect")
+
+        elif entity.hp <= 0:
+            print ("monster is dead")
+        

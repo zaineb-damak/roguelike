@@ -2,74 +2,60 @@ import pygame
 import random
 import math
 from creature import Creature
+from equipment import Equipment
+import time
 
 class Monster(Creature):
     def __init__(self, x, y,map, tile_size,blocks):
         super().__init__('demon',x, y, map, tile_size,blocks)
         self.rect.topleft = (x*self.tile_size, y*self.tile_size)  # Starting position of the monster
-        self.image = pygame.transform.scale(self.image, (10, 10))
+        self.image = pygame.transform.scale(self.image, (20, 20))
+        self.turn = True
+        self.attack_cooldown = 0
 
     def update(self):
         pass  # Add monster movement and other logic here
 
-    # def set_initial_pos(self,room):
-    #     x = random.randint(room.x1+1,room.x2-1) 
-    #     y = random.randint(room.y1-1,room.y2+1) 
-    #     if not self.map.map[x][y].blocked:
-    #         self.x = x
-    #         self.y = y
-    #         self.rect.topleft = (self.x*self.tile_size, self.y*self.tile_size)
-    #         print(self.rect.topleft)
-
-    
-    
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
     
     def move_to(self,player):
-        # next_rect = self.rect.copy()
-        # dist_x = dest_x - self.x
-        # dist_y = dest_y - self.y
-        # dist_x = dist_x // self.tile_size
-        # dist_y = dist_y // self.tile_size
-        # distance = math.sqrt(dist_x ** 2 + dist_y ** 2)
-        # print(distance)
-        # dx = round(dist_x / distance)
-        # dy = round(dist_y / distance)
-        # # self.move(dx, dy)
-        # if distance != 42:
-        #     print("distance 2", distance)
-        #     next_rect.x +=  dx
-        #     next_rect.y +=  dy
-        #     if not self.check_collision(next_rect):
-        #         self.rect.x = next_rect.x 
-        #         self.rect.y = next_rect.y 
-
+        next_rect = self.rect.copy()
         dx, dy = player.rect.x - self.rect.x, player.rect.y - self.rect.y
-        dist = math.hypot(dx, dy)
-        if dist != 0:
-            dx, dy = dx / dist, dy / dist  # Normalize.
+        distance = math.hypot(dx, dy)
+        if distance <= 50 and distance>1:
+            dx, dy = dx / distance, dy / distance  # Normalize.
+           
+
+            next_rect.x += dx * self.speed
+            next_rect.y += dy * self.speed
+
         # Move along this normalized vector towards the player at current speed.
+            if not self.check_collision(next_rect) and not self.rect.colliderect(player.rect) :
+            
+                self.rect.x += dx * self.speed
+                self.rect.y += dy * self.speed
 
-            self.rect.x += dx 
-            self.rect.y += dy 
 
 
-
+    
+    
+    
+    
     def attack(self,player):
-        dist_x = player.rect.x - self.rect.x
-        dist_y = player.rect.y - self.rect.y
-        distance = math.hypot(dist_x, dist_y)
-        print(distance)
-        if distance <= 20:
-            print("player is close")
-            print(distance)
-            self.move_to(player)
-        elif player.hp > 0 and self.rect.colliderect(player.rect):
-            print ("monster attacking")
-            print(distance)
-            player.hp -= 1
+        
+        if self.attack_cooldown > 0:
+            self.attack_cooldown -= 1
+            self.turn = False
+            player.turn = True
+
+        print("monster cooldown", self.attack_cooldown)
+        damage = self.strength - player.defense
+        if player.hp > 0 and self.rect.colliderect(player.rect) and self.turn and self.attack_cooldown == 0:
+            print (f"{self.name} attacks {player.name} for {damage} hit points")
+            player.take_damage(damage)
+            self.attack_cooldown = 10
+            self.turn = False
+            player.turn = True
+
         elif player.hp <= 0 and self.rect.colliderect(player.rect):
             print ("player is dead")
 

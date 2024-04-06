@@ -1,24 +1,29 @@
 import pygame
 from entity import Entity
 import math
+from camera import Camera
 
 class Creature(Entity):
-    def __init__(self, name, x, y,map, blocks, hp = 5, defense = 5, xp = 5):
+    def __init__(self, name, x, y,map, blocks, hp = 50, strength = 2, defense = 0):
         super().__init__(name,x,y, blocks)
         
         self.map = map
         self.wall_map = self.map.map
         self.tile_size = self.map.tile_size
         self.image = pygame.image.load(f"./assets/{self.name}.png")
-        self.image = pygame.transform.scale(self.image, (5, 5))
+        self.image = pygame.transform.scale(self.image, (18, 18))
         self.rect = self.image.get_rect()
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
-        self.xp = xp
+        self.strength = strength
+        self.xp = 0
         self.speed = 1 
+        self.moves = True
+        
+    
        
-    # @property
+    # @propert
     # def x(self):
     #     return self.x
 
@@ -28,15 +33,10 @@ class Creature(Entity):
     #     # Update self.rect.x whenever self.x changes
     #     self.rect.x = value
 
-    #def distance(self,other):
-        # dx = dest_x - self.x
-        # dy = dest_y - self.y
-        # return math.sqrt(dx ** 2 + dy ** 2)
-       
-        # x = other.x - self.x
-        # y = other.y - self.y
-        # if x<0 and y>0:
-        #     return self.wall_map[][]
+    def distance(self,other):
+        dist_x = other.rect.x - self.rect.x
+        dist_y = other.rect.y - self.rect.y
+        return math.hypot(dist_x, dist_y)
 
     
     def check_collision(self, dest):
@@ -54,12 +54,25 @@ class Creature(Entity):
             corner_tile_y = corner[1] // self.tile_size
             
             # Check if the corner corresponds to a wall
-            if self.wall_map[corner_tile_x][corner_tile_y].blocked:
+            if self.wall_map[corner_tile_x][corner_tile_y].blocks:
                 return True  # Collision detected with a wall
     
         return False  # No collision detected
+
+    def entities_collide(self, other):
+        if self.rect.colliderect(other.rect):
+            if isinstance(self,Creature):
+                self.moves = False
+            return True
+        else:
+            return False
        
-    
+      
+        
+    def take_damage(self, damage):
+        #apply damage if possible
+        if damage > 0:
+            self.hp -= damage
         
 
                

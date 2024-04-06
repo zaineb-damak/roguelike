@@ -3,6 +3,9 @@ import pygame
 import random
 from monster import Monster
 from player import Player
+from entity import Entity
+from camera import Camera
+import math
 
 
 WHITE = (255, 255, 255)
@@ -10,26 +13,25 @@ BLACK = (0, 0, 0)
 
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 5
-MAX_ROOMS = 30
+MAX_ROOMS = 25
 MAX_ROOMS_MONSTERS = 3
 
-class Tile:
-    def __init__(self, blocked, block_sight=None):
-        super().__init__()
-        if block_sight is None:
-            block_sight = blocked
-        if blocked:
+class Tile(Entity):
+    def __init__(self, blocks,tile_size,x,y):
+        super().__init__('Tile', x, y, blocks)
+        if blocks:
             self.name = 'wall'
         else : 
             self.name = 'floor'
                
-        self.blocked = blocked
-               
-        self.block_sight = block_sight
-        self.tile_size = 20
+        self.blocks = blocks        
+        self.tile_size = tile_size
         self.image = pygame.image.load(f"./assets/{self.name}.png")
         self.image = pygame.transform.scale(self.image, (self.tile_size, self.tile_size))
         self.rect = self.image.get_rect()
+        self.rect.x = x * self.tile_size
+        self.rect.y = y * self.tile_size
+        self.rect.topleft = (self.rect.x, self.rect.y)
 
 class Room:
     def __init__(self, x, y, w, h):
@@ -55,12 +57,21 @@ class Map:
         self.height = h
         self.window = window
         self.tile_size = tile_size
-        self.map=[[ Tile(True) for _ in range(self.height)] for _ in range(self.width)]
+        self.map=[[ Tile(True, self.tile_size, x, y) for y in range(self.height)] for x in range(self.width)]
         self.rooms = []
         self.wall_list = []
         self.monsters = []
         self.entities = []
         self.make_map()
+        
+        
+        
+
+
+    def distance(self, wall1, wall2):
+        dist_x = wall2.rect.x - wall1.rect.x
+        dist_y = wall2.rect.y - wall1.rect.y
+        return math.hypot(dist_x*self.tile_size, dist_y*self.tile_size)
 
     def make_map(self):
         num_rooms = 0
@@ -98,8 +109,8 @@ class Map:
     def create_room(self,room):
         for x in range(room.x1 + 1, room.x2):
             for y in range(room.y1 + 1,room.y2):
-                self.map[x][y].blocked = False
-                self.map[x][y].block_sight = False
+                self.map[x][y].blocks = False
+            
 
     def connect_rooms(self, room1, room2):
         x1, y1 = room1.center()
@@ -112,13 +123,13 @@ class Map:
 
     def create_horizontal_tunnel(self, x1, x2, y):
         for x in range(min(x1, x2), max(x1, x2) + 1):
-            self.map[x][y].blocked = False
-            self.map[x][y].block_sight = False
+            self.map[x][y].blocks = False
+            
 
     def create_vertical_tunnel(self, y1, y2, x):
         for y in range(min(y1, y2), max(y1, y2) + 1):
-            self.map[x][y].blocked = False
-            self.map[x][y].block_sight = False
+            self.map[x][y].blocks = False
+            
     
     def get_initial_room(self):
         if self.rooms:
@@ -130,7 +141,7 @@ class Map:
         ''' returns entity if it blocks else return none'''       
         #check for any blocking objects
         for entity in self.entities :
-            if entity.blocks and entity.x == x and entity.y == y:
+            if entity.blocks and entity.rect.x == x and entity.rect.y == y:
                 return entity
         return None
         
@@ -139,8 +150,8 @@ class Map:
         for i in range(num_monsters):
             x = random.randint(room.x1,room.x2) 
             y = random.randint(room.y1,room.y2) 
-            if not self.map[x][y].blocked and self.get_blocking_entity(x,y) is None:
-                monster = Monster(x,y,self,self.tile_size,True)
+            if not self.map[x][y].blocks and self.get_blocking_entity(x,y) is None:
+                monster = Monster(x, y ,self,self.tile_size,True)
                 self.monsters.append(monster)
             
     def get_pos(self, entity):
@@ -152,8 +163,8 @@ class Map:
         for y in range(self.height):
             for x in range(self.width):
                 wall = self.map[x][y]
-                if wall.blocked:
-                    self.window.blit(wall.image, (x * self.tile_size, y * self.tile_size))
+                if wall.blocks:
+                    self.window.blit(wall.image, (wall.rect.x, wall.rect.y))
                     self.wall_list.append(wall.rect)
                 else:
                     pygame.draw.rect(self.window, BLACK, (x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size))
