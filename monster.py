@@ -11,10 +11,6 @@ class Monster(Creature):
         self.rect.topleft = (x*self.tile_size, y*self.tile_size)  # Starting position of the monster
         self.image = pygame.transform.scale(self.image, (20, 20))
         self.turn = True
-        self.attack_cooldown = 0
-
-    def update(self):
-        pass  # Add monster movement and other logic here
 
     
     def move_to(self,player):
@@ -40,19 +36,16 @@ class Monster(Creature):
         
         if self.attack_cooldown > 0:
             self.attack_cooldown -= 1
-            self.turn = False
-            player.turn = True
 
-        print("monster cooldown", self.attack_cooldown)
         damage = self.strength - player.defense
         if player.hp > 0 and self.rect.colliderect(player.rect) and self.turn and self.attack_cooldown == 0:
             print (f"{self.name} attacks {player.name} for {damage} hit points")
             player.take_damage(damage)
-            self.attack_cooldown = 10
+            print("player hp", player.hp)
+            self.attack_cooldown = 20
             self.turn = False
-            player.turn = True
 
-        elif player.hp <= 0 and self.rect.colliderect(player.rect):
+        elif player.hp <= 0:
             print ("player is dead")
             player.dead = True
            
@@ -64,13 +57,15 @@ class Monster(Creature):
 
         
 class Demon(Monster):
-    def __init__(self,x, y, map, tile_size, blocks, hp=30, strength =5):
+    def __init__(self,x, y, map, tile_size, blocks, hp=25, strength =5):
         super().__init__('demon',x,y, map,tile_size, blocks)
         self.hp = hp
         self.strength = strength
+        self.added_xp = 2
 
 class Goblin(Monster):
-    def __init__(self, x, y, map, tile_size, blocks, hp=20, strength =3):
+    def __init__(self, x, y, map, tile_size, blocks, hp=15, strength =3):
         super().__init__('goblin',x,y, map,tile_size, blocks)
         self.hp = hp
         self.strength = strength
+        self.added_xp = 1

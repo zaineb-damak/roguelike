@@ -4,7 +4,7 @@ import math
 from camera import Camera
 
 class Creature(Entity):
-    def __init__(self, name, x, y,map, blocks, hp = 50, strength = 2, defense = 0):
+    def __init__(self, name, x, y,map, blocks, max_hp = 50, strength = 2, defense = 0):
         super().__init__(name,x,y, blocks)
         
         self.map = map
@@ -13,13 +13,13 @@ class Creature(Entity):
         self.image = pygame.image.load(f"./assets/{self.name}.png")
         self.image = pygame.transform.scale(self.image, (18, 18))
         self.rect = self.image.get_rect()
-        self.max_hp = hp
-        self.hp = hp
+        self.max_hp = max_hp
+        self.hp = max_hp
         self.defense = defense
         self.strength = strength
-        self.xp = 0
         self.speed = 1 
         self.moves = True
+        self.attack_cooldown = 0
         
     
        
@@ -76,4 +76,5 @@ class Creature(Entity):
             self.hp -= damage
         
    
+
                

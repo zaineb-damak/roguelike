@@ -6,13 +6,15 @@ from monster import Monster
 from equipment import Equipment
 
 class Player(Creature):
-    def __init__(self,x, y,map,blocks):
-        super().__init__('player',x, y, map,blocks)
+    def __init__(self,x,y,map,blocks):
+        super().__init__('player',x,y,map,blocks)
         self.rect.topleft = self.set_initial_pos()
         self.dead = False
         self.speed = 2
-        self.turn = False
-        self.attack_cooldown = 0
+        self.xp = 0
+        self.max_xp_per_level = 10
+        self.level = 0
+        
 
     def set_initial_pos(self):
         room = self.map.get_initial_room()
@@ -39,39 +41,52 @@ class Player(Creature):
         dest = self.input()
         if not self.check_collision(dest) and self.moves:
             self.rect = dest
-       
-        
         
 
     def meet(self, entity):
         if isinstance(entity, Monster):
-            print("combat starting")
             self.attack(entity)
         if isinstance(entity, Equipment):
             pass
         else:
             return
-         
+        
+    def add_xp(self, added_xp=1):
+        self.xp += added_xp
+        print(f"XP + {added_xp}")
+    
+    def level_up(self):
+        if self.xp == self.max_xp_per_level:
+            self.level += 1
+            self.strength += 2
+            self.hp = self.max_hp
+            self.xp = 0
+            print(f"player leveled up ! you're at level {self.level}")
 
     def attack(self, entity):
         entity.attack(self)
-        # print("player ", self.attack_cooldown)
-        # if self.attack_cooldown > 0:
-        #     self.attack_cooldown -= 1
+        if self.attack_cooldown > 0:
+            self.attack_cooldown -= 1
        
         damage = self.strength - entity.defense
-        if damage > 0 and self.turn and self.attack_cooldown == 0 :
-            print(f"{self.name} attacks {entity.name} for {damage} hit points")
-            entity.take_damage(damage)
-            #self.attack_cooldown = 60
-            self.turn = False
-            entity.turn = True
-            
-        elif damage<0 and self.attack_cooldown == 0 and self.turn:
-            print(f"{self.name} attacks {entity.name} but it has no effect")
-
-        elif entity.hp <= 0:
+        if entity.hp <= 0:
             print ("monster is dead")
             entity.dies()
-            #self.moves = True
+            self.add_xp(entity.added_xp)
+            
+
+        elif damage > 0 and self.attack_cooldown == 0:
+            print(f"{self.name} attacks {entity.name} for {damage} hit points")
+            entity.take_damage(damage)
+            print("entity hp",entity.hp)
+            self.attack_cooldown = 10
+            entity.turn = True
+            
+        elif damage<0 and self.attack_cooldown == 0:
+            print(f"{self.name} attacks {entity.name} but it has no effect")
+
         
+        
+    def update(self):
+        self.level_up()
+        self.move()

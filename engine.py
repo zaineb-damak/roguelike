@@ -68,7 +68,7 @@ class Engine:
     def render(self):
        
         #update player's moves
-        self.player.move()
+        self.player.update()
         for monster in self.monsters:
             monster.move_to(self.player)
             if self.player.entities_collide(monster):
@@ -108,7 +108,7 @@ class Engine:
 
         while self.running:
             # Handle events
-            self.handle_events(events=pygame.event.get())
+            self.handle_events(pygame.event.get())
 
             clock.tick(FPS)
             # Handle player movement and render sprites
