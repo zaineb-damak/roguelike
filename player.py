@@ -9,13 +9,7 @@ class Player(Creature):
     def __init__(self,x, y,map,blocks):
         super().__init__('player',x, y, map,blocks)
         self.rect.topleft = self.set_initial_pos()
-        self.velocity = [0, 0]
-        self.hurt = False
         self.dead = False
-        self.can_move = True
-        self.time = 0
-        self.can_get_hurt = True
-        self.is_attacking = False
         self.speed = 2
         self.turn = False
         self.attack_cooldown = 0
@@ -43,7 +37,7 @@ class Player(Creature):
     def move(self):
     # Check for collision with walls
         dest = self.input()
-        if not self.check_collision(dest)  and self.moves:
+        if not self.check_collision(dest) and self.moves:
             self.rect = dest
        
         
@@ -78,4 +72,6 @@ class Player(Creature):
 
         elif entity.hp <= 0:
             print ("monster is dead")
+            entity.dies()
+            #self.moves = True
         

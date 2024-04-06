@@ -65,6 +65,7 @@ class Creature(Entity):
                 self.moves = False
             return True
         else:
+            self.moves = True
             return False
        
       
@@ -74,5 +75,5 @@ class Creature(Entity):
         if damage > 0:
             self.hp -= damage
         
-
+   
                

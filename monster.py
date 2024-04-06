@@ -6,8 +6,8 @@ from equipment import Equipment
 import time
 
 class Monster(Creature):
-    def __init__(self, x, y,map, tile_size,blocks):
-        super().__init__('demon',x, y, map, tile_size,blocks)
+    def __init__(self,name, x, y,map, tile_size,blocks):
+        super().__init__(name,x, y, map, tile_size,blocks)
         self.rect.topleft = (x*self.tile_size, y*self.tile_size)  # Starting position of the monster
         self.image = pygame.transform.scale(self.image, (20, 20))
         self.turn = True
@@ -34,11 +34,7 @@ class Monster(Creature):
                 self.rect.x += dx * self.speed
                 self.rect.y += dy * self.speed
 
-
-
-    
-    
-    
+ 
     
     def attack(self,player):
         
@@ -58,5 +54,23 @@ class Monster(Creature):
 
         elif player.hp <= 0 and self.rect.colliderect(player.rect):
             print ("player is dead")
+            player.dead = True
+           
+    def dies(self):
+        if self.hp <= 0:
+            self.moves = False 
+            self.map.monsters.remove(self)
+            self.map.entities.remove(self)
 
         
+class Demon(Monster):
+    def __init__(self,x, y, map, tile_size, blocks, hp=30, strength =5):
+        super().__init__('demon',x,y, map,tile_size, blocks)
+        self.hp = hp
+        self.strength = strength
+
+class Goblin(Monster):
+    def __init__(self, x, y, map, tile_size, blocks, hp=20, strength =3):
+        super().__init__('goblin',x,y, map,tile_size, blocks)
+        self.hp = hp
+        self.strength = strength

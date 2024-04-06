@@ -1,7 +1,7 @@
 
 import pygame
 import random
-from monster import Monster
+from monster import Goblin, Demon
 from player import Player
 from entity import Entity
 from camera import Camera
@@ -13,7 +13,7 @@ BLACK = (0, 0, 0)
 
 ROOM_MAX_SIZE = 10
 ROOM_MIN_SIZE = 5
-MAX_ROOMS = 25
+MAX_ROOMS = 30
 MAX_ROOMS_MONSTERS = 3
 
 class Tile(Entity):
@@ -146,12 +146,17 @@ class Map:
         return None
         
     def place_monsters(self, room): 
-        num_monsters = random.randint(0,MAX_ROOMS_MONSTERS)
+        num_monsters = random.randint(1,MAX_ROOMS_MONSTERS)
         for i in range(num_monsters):
             x = random.randint(room.x1,room.x2) 
-            y = random.randint(room.y1,room.y2) 
+            y = random.randint(room.y1,room.y2)
+            random_number = random.random() 
             if not self.map[x][y].blocks and self.get_blocking_entity(x,y) is None:
-                monster = Monster(x, y ,self,self.tile_size,True)
+                if random_number<0.6:
+                    monster = Goblin(x, y ,self,self.tile_size,True)
+                else:
+                    monster = Demon(x, y ,self,self.tile_size,True)
+                
                 self.monsters.append(monster)
             
     def get_pos(self, entity):
