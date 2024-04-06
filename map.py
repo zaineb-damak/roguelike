@@ -52,7 +52,7 @@ class Room:
 
     
 class Map:
-    def __init__(self, w, h, window, tile_size):
+    def __init__(self, w, h, window, tile_size, message_log):
         self.width = w 
         self.height = h
         self.window = window
@@ -62,6 +62,7 @@ class Map:
         self.wall_list = []
         self.monsters = []
         self.entities = []
+        self.message_log = message_log
         self.make_map()
         
         

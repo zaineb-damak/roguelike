@@ -9,6 +9,7 @@ class Player(Creature):
     def __init__(self,x,y,map,blocks):
         super().__init__('player',x,y,map,blocks)
         self.rect.topleft = self.set_initial_pos()
+        self.message_log = map.message_log
         self.dead = False
         self.speed = 2
         self.xp = 0
@@ -54,6 +55,7 @@ class Player(Creature):
     def add_xp(self, added_xp=1):
         self.xp += added_xp
         print(f"XP + {added_xp}")
+        self.message_log.add_message(f"XP + {added_xp}",(0, 0, 255))
     
     def level_up(self):
         if self.xp == self.max_xp_per_level:
@@ -62,6 +64,7 @@ class Player(Creature):
             self.hp = self.max_hp
             self.xp = 0
             print(f"player leveled up ! you're at level {self.level}")
+            self.message_log.add_message(f"player leveled up ! you're at level {self.level}",(0, 0, 255))
 
     def attack(self, entity):
         entity.attack(self)
@@ -71,12 +74,14 @@ class Player(Creature):
         damage = self.strength - entity.defense
         if entity.hp <= 0:
             print ("monster is dead")
+            self.message_log.add_message(f"Player killed {entity.name}")
             entity.dies()
             self.add_xp(entity.added_xp)
             
 
         elif damage > 0 and self.attack_cooldown == 0:
             print(f"{self.name} attacks {entity.name} for {damage} hit points")
+            self.message_log.add_message(f"{self.name} attacks {entity.name} for {damage} hit points")
             entity.take_damage(damage)
             print("entity hp",entity.hp)
             self.attack_cooldown = 10

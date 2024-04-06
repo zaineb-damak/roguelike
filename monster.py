@@ -10,6 +10,7 @@ class Monster(Creature):
         super().__init__(name,x, y, map, tile_size,blocks)
         self.rect.topleft = (x*self.tile_size, y*self.tile_size)  # Starting position of the monster
         self.image = pygame.transform.scale(self.image, (20, 20))
+        self.message_log = map.message_log
         self.turn = True
 
     
@@ -40,6 +41,7 @@ class Monster(Creature):
         damage = self.strength - player.defense
         if player.hp > 0 and self.rect.colliderect(player.rect) and self.turn and self.attack_cooldown == 0:
             print (f"{self.name} attacks {player.name} for {damage} hit points")
+            self.message_log.add_message(f"{self.name} attacks {player.name} for {damage} hit points", (255, 0, 0))
             player.take_damage(damage)
             print("player hp", player.hp)
             self.attack_cooldown = 20

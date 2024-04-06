@@ -5,6 +5,7 @@ from map import Map
 from monster import Monster
 from item import Item
 from camera import Camera
+from message_log import MessageLog
 
 
 
@@ -12,7 +13,7 @@ from camera import Camera
 # Set up the display
 
 tile_size = 25
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1000, 800
 pygame.display.set_caption("Rogue-like Game")
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -23,7 +24,8 @@ class Engine:
         self.window = pygame.display.set_mode((WIDTH, HEIGHT))
     
     def initialize(self):
-        self.game_map = Map(WIDTH // tile_size, HEIGHT//tile_size, self.window, tile_size)
+        self.message_log = MessageLog()
+        self.game_map = Map(800 // tile_size, 600//tile_size, self.window, tile_size, self.message_log)
         self.player =Player(400,300,self.game_map,blocks=True)
         self.monsters = self.game_map.monsters
         self.running = True
@@ -76,16 +78,20 @@ class Engine:
         
         # Clear the screen
         self.window.fill(BLACK)
-
+         
+        # Display messages
+        self.message_log.render_messages(self.window)
         # Draw the map
         self.game_map.draw_map()
 
         # Draw all sprites (player, monsters, items)
         self.game_map.entities.draw(self.window)
+       
         
-
         # Update the display
         pygame.display.flip()
+
+    
 
     def main(self):
         # Initialize Pygame
@@ -104,7 +110,7 @@ class Engine:
         all_sprites.add(self.game_map.monsters)
         self.game_map.entities = all_sprites
         self.game_map.player = self.player
-        
+              
 
         while self.running:
             # Handle events
@@ -113,6 +119,8 @@ class Engine:
             clock.tick(FPS)
             # Handle player movement and render sprites
             self.render()  
+
+       
 
             if self.player.dead:
             # If the player is dead, render the game over screen
