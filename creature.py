@@ -23,16 +23,6 @@ class Creature(Entity):
         self.attack_cooldown = 0
         
    
-    # @propert
-    # def x(self):
-    #     return self.x
-
-    # @x.setter
-    # def x(self, value):
-    #     self.x = value
-    #     # Update self.rect.x whenever self.x changes
-    #     self.rect.x = value
-
     def distance(self,other):
         dist_x = other.rect.x - self.rect.x
         dist_y = other.rect.y - self.rect.y

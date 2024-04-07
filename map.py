@@ -1,8 +1,6 @@
-
 import pygame
 import random
 from monster import Goblin, Demon
-from player import Player
 from entity import Entity
 from equipment import Potion, Coin, Armor, Weapon
 import math

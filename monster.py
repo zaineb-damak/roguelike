@@ -1,9 +1,6 @@
 import pygame
-import random
 import math
 from creature import Creature
-from equipment import Equipment
-import time
 
 class Monster(Creature):
     def __init__(self,name, x, y,map, tile_size,blocks):
@@ -42,7 +39,6 @@ class Monster(Creature):
         if player.hp > 0 and self.rect.colliderect(player.rect) and self.turn and self.attack_cooldown == 0:
             self.message_log.add_message(f"{self.name} attacks {player.name} for {damage} hit points", (255, 0, 0))
             player.take_damage(damage)
-            print("player hp", player.hp)
             self.attack_cooldown = 20
             self.turn = False
 

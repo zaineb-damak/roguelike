@@ -2,8 +2,6 @@ import pygame
 import sys
 from player import Player
 from map import Map
-from monster import Monster
-from item import Item
 from message_log import MessageLog
 
 

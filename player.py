@@ -1,5 +1,3 @@
-# player.py
-
 import pygame
 from creature import Creature
 from monster import Monster
@@ -66,7 +64,6 @@ class Player(Creature):
                 self.map.equipments.remove(entity)
             else:
                 self.add_to_inventory(entity)
-                print(self.inventory)
                
                     
         else:
@@ -99,7 +96,6 @@ class Player(Creature):
         elif damage > 0 and self.attack_cooldown == 0:
             self.message_log.add_message(f"{self.name} attacks {entity.name} for {damage} hit points")
             entity.take_damage(damage)
-            print("entity hp",entity.hp)
             self.attack_cooldown = 10
             entity.turn = True
 
