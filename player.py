@@ -3,7 +3,7 @@
 import pygame
 from creature import Creature
 from monster import Monster
-from equipment import Equipment
+from equipment import Equipment, Potion, Coin
 
 class Player(Creature):
     def __init__(self,x,y,map,blocks):
@@ -15,6 +15,9 @@ class Player(Creature):
         self.xp = 0
         self.max_xp_per_level = 10
         self.level = 0
+        self.inventory = []
+        self.inventory_size = 5
+        self.coin = 0
         
 
     def set_initial_pos(self):
@@ -48,13 +51,18 @@ class Player(Creature):
         if isinstance(entity, Monster):
             self.attack(entity)
         if isinstance(entity, Equipment):
-            pass
+            if isinstance(entity,Potion):
+                self.add_to_inventory(entity)
+                self.heal()
+                self.map.entities.remove(entity)
+            if isinstance(entity, Coin):
+                self.add_coin()
+                self.map.entities.remove(entity)
         else:
             return
         
     def add_xp(self, added_xp=1):
         self.xp += added_xp
-        print(f"XP + {added_xp}")
         self.message_log.add_message(f"XP + {added_xp}",(0, 0, 255))
     
     def level_up(self):
@@ -63,7 +71,6 @@ class Player(Creature):
             self.strength += 2
             self.hp = self.max_hp
             self.xp = 0
-            print(f"player leveled up ! you're at level {self.level}")
             self.message_log.add_message(f"player leveled up ! you're at level {self.level}",(0, 0, 255))
 
     def attack(self, entity):
@@ -73,25 +80,45 @@ class Player(Creature):
        
         damage = self.strength - entity.defense
         if entity.hp <= 0:
-            print ("monster is dead")
-            self.message_log.add_message(f"Player killed {entity.name}")
+            self.message_log.add_message(f"Player killed {entity.name}", (0,255,0))
             entity.dies()
             self.add_xp(entity.added_xp)
             
 
         elif damage > 0 and self.attack_cooldown == 0:
-            print(f"{self.name} attacks {entity.name} for {damage} hit points")
             self.message_log.add_message(f"{self.name} attacks {entity.name} for {damage} hit points")
             entity.take_damage(damage)
             print("entity hp",entity.hp)
             self.attack_cooldown = 10
             entity.turn = True
-            
-        elif damage<0 and self.attack_cooldown == 0:
-            print(f"{self.name} attacks {entity.name} but it has no effect")
 
-        
-        
+    def heal(self):
+        if self.hp < self.max_hp: 
+            difference = self.max_hp - self.hp
+            if difference > 10:
+                self.hp += 10
+            else:
+                self.hp = self.max_hp
+            self.message_log.add_message(f"Player used healing potion. {10} HP +10")
+
+    def add_coin(self):
+        if self.coin < 10:
+            self.coin += 1
+            self.message_log.add_message("Player took a coin")
+        else:
+            self.add_xp()
+            self.coin = 0
+
+    def add_to_inventory(self, equipment):
+        if len(self.inventory) < self.inventory_size:
+            self.inventory.append(equipment)
+            self.message_log.add_message(f"{equipment.name} is add to inventory")
+    
+    def remove_from_inventory(self, equipment):
+        if len(self.inventory) == 0:
+            return
+        self.inventory.remove(equipment)
+
     def update(self):
         self.level_up()
         self.move()

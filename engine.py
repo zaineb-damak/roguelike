@@ -71,10 +71,10 @@ class Engine:
        
         #update player's moves
         self.player.update()
-        for monster in self.monsters:
-            monster.move_to(self.player)
-            if self.player.entities_collide(monster):
-                self.player.meet(monster)
+        for entity in self.game_map.entities:
+            entity.move_to(self.player)
+            if self.player.entities_collide(entity):
+                self.player.meet(entity)
         
         # Clear the screen
         self.window.fill(BLACK)
@@ -85,6 +85,7 @@ class Engine:
         self.game_map.draw_map()
 
         # Draw all sprites (player, monsters, items)
+        self.game_map.player.draw(self.window)
         self.game_map.entities.draw(self.window)
        
         
@@ -103,13 +104,15 @@ class Engine:
         FPS = 50  # Set desired FPS value
         # Create groups for monsters and items
         all_sprites = pygame.sprite.Group()
-        items = pygame.sprite.Group()
+        player = pygame.sprite.Group()
 
         # Add player to all_sprites group
-        all_sprites.add(self.player)
+        #all_sprites.add(self.player)
         all_sprites.add(self.game_map.monsters)
+        all_sprites.add(self.game_map.equipments)
+        player.add(self.player)
         self.game_map.entities = all_sprites
-        self.game_map.player = self.player
+        self.game_map.player = player
               
 
         while self.running:
@@ -119,8 +122,6 @@ class Engine:
             clock.tick(FPS)
             # Handle player movement and render sprites
             self.render()  
-
-       
 
             if self.player.dead:
             # If the player is dead, render the game over screen

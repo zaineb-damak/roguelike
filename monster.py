@@ -40,7 +40,6 @@ class Monster(Creature):
 
         damage = self.strength - player.defense
         if player.hp > 0 and self.rect.colliderect(player.rect) and self.turn and self.attack_cooldown == 0:
-            print (f"{self.name} attacks {player.name} for {damage} hit points")
             self.message_log.add_message(f"{self.name} attacks {player.name} for {damage} hit points", (255, 0, 0))
             player.take_damage(damage)
             print("player hp", player.hp)
@@ -48,7 +47,6 @@ class Monster(Creature):
             self.turn = False
 
         elif player.hp <= 0:
-            print ("player is dead")
             player.dead = True
            
     def dies(self):

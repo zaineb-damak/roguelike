@@ -1,5 +1,6 @@
 import pygame
 from entity import Entity
+from equipment import Equipment
 import math
 from camera import Camera
 
@@ -21,8 +22,7 @@ class Creature(Entity):
         self.moves = True
         self.attack_cooldown = 0
         
-    
-       
+   
     # @propert
     # def x(self):
     #     return self.x
@@ -61,9 +61,11 @@ class Creature(Entity):
 
     def entities_collide(self, other):
         if self.rect.colliderect(other.rect):
-            if isinstance(self,Creature):
+            if isinstance(other,Creature):
                 self.moves = False
-            return True
+                return True
+            if isinstance(other,Equipment):
+                return True
         else:
             self.moves = True
             return False

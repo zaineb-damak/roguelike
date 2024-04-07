@@ -8,6 +8,8 @@ class Entity(pygame.sprite.Sprite):
         self.y = y
         self.blocks = blocks
 
+   
+       
     
     
    

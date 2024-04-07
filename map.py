@@ -4,6 +4,7 @@ import random
 from monster import Goblin, Demon
 from player import Player
 from entity import Entity
+from equipment import Potion, Coin
 from camera import Camera
 import math
 
@@ -61,6 +62,7 @@ class Map:
         self.rooms = []
         self.wall_list = []
         self.monsters = []
+        self.equipments = []
         self.entities = []
         self.message_log = message_log
         self.make_map()
@@ -103,6 +105,7 @@ class Map:
                     
                 #append the new room to the list
                 self.place_monsters(new_room)
+                self.place_equipments(new_room)
                 self.rooms.append(new_room)
                 num_rooms += 1
 
@@ -159,7 +162,22 @@ class Map:
                     monster = Demon(x, y ,self,self.tile_size,True)
                 
                 self.monsters.append(monster)
-            
+
+    def place_equipments(self, room):
+        num_equipments = random.randint(1,4)
+        for i in range(num_equipments):
+            x = random.randint(room.x1,room.x2) 
+            y = random.randint(room.y1,room.y2)
+            random_number = random.random() 
+            if not self.map[x][y].blocks and self.get_blocking_entity(x,y) is None:
+                if random_number < 0.7:
+                    coin = Coin(self.tile_size, x=x,y=y)
+                    self.equipments.append(coin)
+                else:
+                    potion = Potion(self.tile_size, x=x,y=y)
+                    self.equipments.append(potion)
+    
+    
     def get_pos(self, entity):
         return self.map[entity.x // self.tile_size][entity.y // self.tile_size]
     

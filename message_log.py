@@ -24,14 +24,10 @@ class MessageLog:
 
     def render_messages(self, surface):
         font = pygame.font.Font(None, 20)
-        height = 780  # Starting y position
-        y_offset = height - 1
+        y = 780  # Starting y position
         for message in reversed(self.messages):
             text= font.render(message.text, True, message.color)
             text_rect = text.get_rect()
-            text_rect.center = (surface.get_width() // 2, y_offset)
+            text_rect.center = (surface.get_width() // 2, y)
             surface.blit(text, text_rect)
-            y_offset -= 30
-
-            if y_offset <0:
-                return
+            y -= 30
