@@ -23,12 +23,34 @@ class Engine:
     def __init__(self):
         self.window = pygame.display.set_mode((WIDTH, HEIGHT))
     
+    def add_sprites(self):
+        all_sprites = pygame.sprite.Group()
+        player = pygame.sprite.Group()
+
+        # Add player to all_sprites group
+        all_sprites.add(self.game_map.monsters)
+        all_sprites.add(self.game_map.equipments)
+        all_sprites.add(self.game_map.stairs)
+        player.add(self.player)
+        self.game_map.entities = all_sprites
+        self.game_map.player = player
+   
     def initialize(self):
         self.message_log = MessageLog()
         self.game_map = Map(800 // tile_size, 600//tile_size, self.window, tile_size, self.message_log)
         self.player =Player(400,300,self.game_map,blocks=True)
         self.monsters = self.game_map.monsters
         self.running = True
+
+        self.add_sprites()
+
+        
+    
+    def create_new_level(self):
+        if len(self.game_map.monsters) == 0:
+            self.game_map = Map(800 // tile_size, 600//tile_size, self.window, tile_size, self.message_log)
+            self.monsters = self.game_map.monsters
+            self.add_sprites()
     
     def handle_events(self,events):
         for event in events:
@@ -141,7 +163,10 @@ class Engine:
         # Display messages
         self.message_log.render_messages(self.window)
         self.render_player_status()
+        
+
         # Draw the map
+        self.create_new_level()
         self.game_map.draw_map()
 
         # Draw all sprites (player, monsters, items)
@@ -158,21 +183,11 @@ class Engine:
         # Initialize Pygame
         pygame.init()
         self.initialize()
-        self.window.fill(BLACK)
-        pygame.display.flip()
+      
         clock = pygame.time.Clock()  # Create a clock object
         FPS = 50  # Set desired FPS value
         # Create groups for monsters and items
-        all_sprites = pygame.sprite.Group()
-        player = pygame.sprite.Group()
-
-        # Add player to all_sprites group
-        #all_sprites.add(self.player)
-        all_sprites.add(self.game_map.monsters)
-        all_sprites.add(self.game_map.equipments)
-        player.add(self.player)
-        self.game_map.entities = all_sprites
-        self.game_map.player = player
+        
               
 
         while self.running:

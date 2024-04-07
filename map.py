@@ -4,6 +4,7 @@ import random
 from monster import Goblin, Demon
 from player import Player
 from entity import Entity
+from stairs import Stairs
 from equipment import Potion, Coin, Armor, Weapon
 from camera import Camera
 import math
@@ -66,6 +67,7 @@ class Map:
         self.entities = []
         self.message_log = message_log
         self.make_map()
+        self.stairs = Stairs(x =0,y =0, map=self)
         
         
         
@@ -140,6 +142,12 @@ class Map:
             return self.rooms[0]
         else:
             return None
+    
+    def get_last_room(self):
+        if self.rooms:
+            return self.rooms[-1]
+        else:
+            return None
 
     def get_blocking_entity(self,x, y):
         ''' returns entity if it blocks else return none'''       
@@ -170,11 +178,11 @@ class Map:
             y = random.randint(room.y1,room.y2)
             random_number = random.random() 
             if not self.map[x][y].blocks and self.get_blocking_entity(x,y) is None:
-                if random_number < 0.2:
+                if random_number < 0.4:
                     equipment = Coin(self.tile_size, x=x,y=y)
-                elif random_number < 0.3:
+                elif random_number < 0.7:
                     equipment = Potion(self.tile_size, x=x,y=y)
-                elif random_number < 0.4:
+                elif random_number < 0.9:
                     equipment = Armor(self.tile_size, x=x,y=y)
                 else:
                     equipment = Weapon(self.tile_size, x=x,y=y)

@@ -57,14 +57,14 @@ class Monster(Creature):
 
         
 class Demon(Monster):
-    def __init__(self,x, y, map, tile_size, blocks, hp=25, strength =5):
+    def __init__(self,x, y, map, tile_size, blocks, hp=25, strength =3):
         super().__init__('demon',x,y, map,tile_size, blocks)
         self.hp = hp
         self.strength = strength
         self.added_xp = 2
 
 class Goblin(Monster):
-    def __init__(self, x, y, map, tile_size, blocks, hp=15, strength =3):
+    def __init__(self, x, y, map, tile_size, blocks, hp=15, strength =1):
         super().__init__('goblin',x,y, map,tile_size, blocks)
         self.hp = hp
         self.strength = strength

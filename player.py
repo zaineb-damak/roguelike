@@ -4,6 +4,7 @@ import pygame
 from creature import Creature
 from monster import Monster
 from equipment import Equipment, Potion, Coin, Weapon, Armor
+from stairs import Stairs
 
 class Player(Creature):
     def __init__(self,x,y,map,blocks):
@@ -52,6 +53,8 @@ class Player(Creature):
         
 
     def meet(self, entity):
+        if isinstance(entity,Stairs):
+            return True
         if isinstance(entity, Monster):
             self.attack(entity)
             if self.using_armor :
@@ -61,12 +64,13 @@ class Player(Creature):
         if isinstance(entity, Equipment):
             if isinstance(entity, Coin):
                 self.add_coin()
+                self.map.entities.remove(entity)
+                self.map.equipments.remove(entity)
             else:
                 self.add_to_inventory(entity)
                 print(self.inventory)
-            
-            self.map.entities.remove(entity)
-            self.map.equipments.remove(entity)
+               
+                    
         else:
             return
         
@@ -78,6 +82,7 @@ class Player(Creature):
         if self.xp == self.max_xp_per_level:
             self.level += 1
             self.strength += 2
+            self.defense += 2
             self.hp = self.max_hp
             self.xp = 0
             self.message_log.add_message(f"player leveled up ! you're at level {self.level}",(0, 0, 255))
@@ -151,11 +156,15 @@ class Player(Creature):
         else:
             self.add_xp()
             self.coin = 0
+        
 
     def add_to_inventory(self, equipment):
         if len(self.inventory) < self.inventory_size:
             self.inventory.append(equipment)
+            self.map.entities.remove(equipment)
+            self.map.equipments.remove(equipment)
             self.message_log.add_message(f"{equipment.name} is added to inventory")
+        return
     
     def remove_from_inventory(self, equipment):
         if len(self.inventory) == 0:
