@@ -4,7 +4,7 @@ import random
 from monster import Goblin, Demon
 from player import Player
 from entity import Entity
-from equipment import Potion, Coin
+from equipment import Potion, Coin, Armor, Weapon
 from camera import Camera
 import math
 
@@ -170,12 +170,16 @@ class Map:
             y = random.randint(room.y1,room.y2)
             random_number = random.random() 
             if not self.map[x][y].blocks and self.get_blocking_entity(x,y) is None:
-                if random_number < 0.7:
-                    coin = Coin(self.tile_size, x=x,y=y)
-                    self.equipments.append(coin)
+                if random_number < 0.2:
+                    equipment = Coin(self.tile_size, x=x,y=y)
+                elif random_number < 0.3:
+                    equipment = Potion(self.tile_size, x=x,y=y)
+                elif random_number < 0.4:
+                    equipment = Armor(self.tile_size, x=x,y=y)
                 else:
-                    potion = Potion(self.tile_size, x=x,y=y)
-                    self.equipments.append(potion)
+                    equipment = Weapon(self.tile_size, x=x,y=y)
+                    
+                self.equipments.append(equipment)
     
     
     def get_pos(self, entity):

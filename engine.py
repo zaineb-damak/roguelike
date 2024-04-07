@@ -34,7 +34,68 @@ class Engine:
         for event in events:
             if event.type == pygame.QUIT:
                 self.running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    self.player.use_item(0)
+                elif event.key == pygame.K_2:
+                    self.player.use_item(1)
+                elif event.key == pygame.K_3:
+                    self.player.use_item(2)
+                elif event.key == pygame.K_4:
+                    self.player.use_item(3)
+                elif event.key == pygame.K_5:
+                    self.player.use_item(4)
             
+    def render_player_status(self):
+        font = pygame.font.Font(None, 20)
+        x = 900
+        y_offset = 100
+        
+        status_attributes = [
+            ("Player's hp", self.player.hp),
+            ("Player's strength", self.player.strength),
+            ("Player's defense", self.player.defense),
+            ("Player's XP", self.player.xp),
+            ("Player's level", self.player.level),
+            ("Player's coins", self.player.coin),
+        ]
+        
+        for attribute_name, attribute_value in status_attributes:
+            text_surface = font.render(attribute_name, True, WHITE)
+            text_rect = text_surface.get_rect(center=(x, y_offset))
+            self.window.blit(text_surface, text_rect)
+            
+            value_surface = font.render(str(attribute_value), True, WHITE)
+            value_rect = value_surface.get_rect(center=(x, y_offset + 20))
+            self.window.blit(value_surface, value_rect)
+            
+            y_offset += 50
+        
+      
+        inventory_attributes = []
+        inventory_attributes.append(("Player's inventory", ""))
+        inventory_attributes.append(("item 1", ""))
+        inventory_attributes.append(("item 2",""))
+        inventory_attributes.append(("item 3", ""))
+        inventory_attributes.append(("item 4", ""))
+        inventory_attributes.append(("item 5", ""))
+        
+
+        for i in range(self.player.inventory_size):
+            if len(self.player.inventory) > i:
+                inventory_attributes[i+1]= ("item " + str(i + 1), self.player.inventory[i].name)
+
+        for name, value in inventory_attributes:
+            text_surface = font.render(name, True, WHITE)
+            text_rect = text_surface.get_rect(center=(x, y_offset))
+            self.window.blit(text_surface, text_rect)
+            
+            value_surface = font.render(value, True, WHITE)
+            value_rect = value_surface.get_rect(center=(x, y_offset + 20))
+            self.window.blit(value_surface, value_rect)
+            
+            y_offset += 50
+    
     def render_game_over_screen(self):
         # Clear the screen
         self.window.fill(BLACK)
@@ -50,8 +111,6 @@ class Engine:
         button_rect = button_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 50))
         pygame.draw.rect(self.window, (50, 50, 50), button_rect)  # Draw button background
         self.window.blit(button_text, button_rect)
-
-        
 
         # Wait for the player to click the restart button
         while self.running:
@@ -81,6 +140,7 @@ class Engine:
          
         # Display messages
         self.message_log.render_messages(self.window)
+        self.render_player_status()
         # Draw the map
         self.game_map.draw_map()
 
