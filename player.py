@@ -80,7 +80,6 @@ class Player(Creature):
         if self.xp >= self.max_xp_per_level:
             self.level += 1
             self.strength += 2
-            self.defense += 2
             self.hp = self.max_hp
             self.xp = 0
             self.message_log.add_message(f"player leveled up ! you're at level {self.level}",(0, 0, 255))

@@ -21,17 +21,16 @@ class Engine:
    
     def __init__(self):
         self.window = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.player_group = pygame.sprite.Group()
     
     def add_sprites(self):
         all_sprites = pygame.sprite.Group()
-        player = pygame.sprite.Group()
 
         # Add player to all_sprites group
         all_sprites.add(self.game_map.monsters)
         all_sprites.add(self.game_map.equipments)
-        player.add(self.player)
         self.game_map.entities = all_sprites
-        self.game_map.player = player
+        self.game_map.player = self.player_group
    
     def initialize(self):
         self.message_log = MessageLog()
@@ -48,9 +47,12 @@ class Engine:
         if len(self.game_map.monsters) == 0:
             self.game_map = Map(800 // tile_size, 600//tile_size, self.window, tile_size, self.message_log)
             self.monsters = self.game_map.monsters
-            self.player.set_initial_pos()
-            self.player.wall_map = self.game_map.map
             self.add_sprites()
+            self.player.map = self.game_map
+            self.player.wall_map = self.game_map.map
+            self.player.rect.x, self.player.rect.y = self.player.set_initial_pos()
+            
+            
     
     def handle_events(self,events):
         for event in events:
@@ -183,7 +185,7 @@ class Engine:
         # Initialize Pygame
         pygame.init()
         self.initialize()
-      
+        self.player_group.add(self.player)
         clock = pygame.time.Clock()  # Create a clock object
         FPS = 50  # Set desired FPS value
         # Create groups for monsters and items
