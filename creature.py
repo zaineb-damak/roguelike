@@ -2,7 +2,7 @@ import pygame
 from entity import Entity
 from equipment import Equipment
 import math
-from camera import Camera
+
 
 class Creature(Entity):
     def __init__(self, name, x, y,map, blocks, max_hp = 50, strength = 2, defense = 0):

@@ -4,7 +4,7 @@ import pygame
 from creature import Creature
 from monster import Monster
 from equipment import Equipment, Potion, Coin, Weapon, Armor
-from stairs import Stairs
+
 
 class Player(Creature):
     def __init__(self,x,y,map,blocks):
@@ -53,8 +53,6 @@ class Player(Creature):
         
 
     def meet(self, entity):
-        if isinstance(entity,Stairs):
-            return True
         if isinstance(entity, Monster):
             self.attack(entity)
             if self.using_armor :
@@ -79,7 +77,7 @@ class Player(Creature):
         self.message_log.add_message(f"XP + {added_xp}",(0, 0, 255))
     
     def level_up(self):
-        if self.xp == self.max_xp_per_level:
+        if self.xp >= self.max_xp_per_level:
             self.level += 1
             self.strength += 2
             self.defense += 2
@@ -172,9 +170,9 @@ class Player(Creature):
         self.inventory.remove(equipment)
     
     def use_item(self,num):
-        if len(self.inventory) == 0:
+        if len(self.inventory) == 0 or num >= len(self.inventory):
             return
-        if self.inventory[num]:
+        if self.inventory[num] is not None:
             if isinstance(self.inventory[num], Potion):
                 self.heal()
             elif isinstance(self.inventory[num], Weapon) or isinstance(self.inventory[num], Armor):

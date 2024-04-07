@@ -4,7 +4,6 @@ from player import Player
 from map import Map
 from monster import Monster
 from item import Item
-from camera import Camera
 from message_log import MessageLog
 
 
@@ -30,7 +29,6 @@ class Engine:
         # Add player to all_sprites group
         all_sprites.add(self.game_map.monsters)
         all_sprites.add(self.game_map.equipments)
-        all_sprites.add(self.game_map.stairs)
         player.add(self.player)
         self.game_map.entities = all_sprites
         self.game_map.player = player
@@ -50,6 +48,8 @@ class Engine:
         if len(self.game_map.monsters) == 0:
             self.game_map = Map(800 // tile_size, 600//tile_size, self.window, tile_size, self.message_log)
             self.monsters = self.game_map.monsters
+            self.player.set_initial_pos()
+            self.player.wall_map = self.game_map.map
             self.add_sprites()
     
     def handle_events(self,events):
@@ -149,7 +149,7 @@ class Engine:
             pygame.display.flip()
 
     def render(self):
-       
+        self.create_new_level()
         #update player's moves
         self.player.update()
         for entity in self.game_map.entities:
@@ -166,7 +166,7 @@ class Engine:
         
 
         # Draw the map
-        self.create_new_level()
+        
         self.game_map.draw_map()
 
         # Draw all sprites (player, monsters, items)

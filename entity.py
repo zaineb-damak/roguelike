@@ -8,9 +8,6 @@ class Entity(pygame.sprite.Sprite):
         self.y = y
         self.blocks = blocks
 
-    def move_to(self,other):
-        pass
-       
     
     
    

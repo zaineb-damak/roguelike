@@ -4,9 +4,7 @@ import random
 from monster import Goblin, Demon
 from player import Player
 from entity import Entity
-from stairs import Stairs
 from equipment import Potion, Coin, Armor, Weapon
-from camera import Camera
 import math
 
 
@@ -67,7 +65,6 @@ class Map:
         self.entities = []
         self.message_log = message_log
         self.make_map()
-        self.stairs = Stairs(x =0,y =0, map=self)
         
         
         
