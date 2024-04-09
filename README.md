@@ -6,7 +6,7 @@ This is a simple rogue-like game implemented in Python using the Pygame library.
 
 First clone the repository from Github and switch to the new directory:
 
-    $ git clone git@github.com/zaineb-damak/rogulike
+    $ git clone git@github.com/zaineb-damak/roguelike
     $ cd roguelike
     
 Activate the virtualenv for your project.
